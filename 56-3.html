@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>讀入json檔並呈現json資料內容</title>
+	<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+	<style>
+	.box{
+		width: 100px;
+		height: 100px;
+		border: 1px solid #000;
+		background: #ccc;
+		position: relative;
+		overflow: hidden;
+	}
+	.box .w{
+		background-color: blue;
+		width: 100px;
+		height: 100px;
+		position: absolute;
+		top:-100px;
+	}
+	.box .txt{
+		position: absolute;
+		top:50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		font-size: 30px;
+		color: #fff;
+	}
+	</style>
+</head>
+
+<body>
+	<div class="box">
+		<div class="w"></div>
+		<div class="txt"></div>
+	</div>
+	<button type="button" onclick="f_01()">點我</button>
+
+
+	<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+	<script>
+		function f_01() {
+			//開始
+			$.ajax({
+				url: "https://data.wra.gov.tw/OpenAPI/api/OpenData/2A49B760-3C0E-4288-B087-D71D6CB360E6/Data?size=10&page=1",
+				dataType: "json"
+			})
+			.done(function (data) {
+				//https://www.wrasb.gov.tw/water01.aspx?n=31286&sms=0，曾文水庫 滿位水是230
+				var w_max = 230;
+				//目前水位
+				var w_now = data.responseData[0].WaterLevel;
+				//取得百分比
+				var p = (w_now / w_max) * 100;
+				p = Math.round(p);
+				//設定視覺
+				$(".box .txt").html(p + "%");
+				$(".box .w").css("top", (100 - p));
+
+			})
+			.fail(function () {
+				$(".box").append("<p>失敗</p>");
+			})
+			.always(function () {
+				//$(".box").append("<p>工作結束</p>");
+			});
+		}
+	</script>
+
+</body>
+
+</html>
